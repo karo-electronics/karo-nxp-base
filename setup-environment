@@ -20,9 +20,15 @@
 # Add options for the script
 # Copyright (C) 2013 Freescale Semiconductor, Inc.
 
-CWD=`pwd`
-PROGNAME="setup-environment"
-PACKAGE_CLASSES=${PACKAGE_CLASSES:-package_rpm}
+CWD="`cd .;pwd`"
+PROGNAME=setup-environment
+export BSPDIR="$CWD"
+TEMPLATECONF=${PWD}/sources/base/conf
+
+if [ -z "$BASH_VERSION" ];then
+    echo "This script must to be run from bash" >&2
+    return 1
+fi
 
 usage()
 {
@@ -43,28 +49,28 @@ the script prepares the calling shell for running bitbake on the build
 directory <build-dir>. The build directory configuration is unchanged.
 "
 
-    ls sources/*/conf/machine/*.conf > /dev/null 2>&1
-    ls sources/meta-freescale-distro/conf/distro/fslc-*.conf > /dev/null 2>&1
-    if [ $? -eq 0 ]; then
-        echo -e "
-Supported machines: `echo; ls sources/*/conf/machine/*.conf \
-| sed s/\.conf//g | sed -r 's/^.+\///' | xargs -I% echo -e "\t%"`
+    shopt -q nullglob && nullglob=false || nullglob=true
+    $nullglob && shopt -s nullglob
+    echo -e "
+Supported machines: `echo; find sources/ -path '*/conf/machine/*.conf' | \
+sed 's:^.*/:\t:;s/\.conf//' | sort`
 
-Supported Freescale's distros: `echo; ls sources/meta-freescale-distro/conf/distro/fslc-*.conf \
-| sed s/\.conf//g | sed -r 's/^.+\///' | xargs -I% echo -e "\t%"`
+Supported distros: `echo; find sources/ -path '*/conf/distro/*.conf' | \
+sed 's:^.*/:\t:;s/\.conf//' | sort`
 
-Available Poky's distros: `echo; ls sources/poky/meta-poky/conf/distro/*.conf \
-| sed s/\.conf//g | sed -r 's/^.+\///' | xargs -I% echo -e "\t%"`
-
-Examples:
-
-- To create a new Yocto build directory:
-  $ MACHINE=imx6qdlsabresd DISTRO=fslc-framebuffer source $PROGNAME build
-
-- To use an existing Yocto build directory:
-  $ source $PROGNAME build
+To build for a machine listed above, run this script as:
+DISTRO=<distro> MACHINE=<machine> source $PROGNAME <build-dir>
 "
-    fi
+    $nullglob && shopt -u nullglob
+    return
+    cat << EOF
+No machine configuration files found!
+Make sure, to set up your yocto source directory with:
+    repo init -u git@github.com:karo-electronics/karo-manifest -b master
+    repo sync
+EOF
+    $nullglob && shopt -u nullglob
+    return 1
 }
 
 clean_up()
@@ -88,8 +94,7 @@ if [ $? != 0 -o $# -lt 1 ]; then
 fi
 
 eval set -- "$ARGS"
-while true;
-do
+while true;do
     case $1 in
         -h|--help)
            usage
@@ -104,38 +109,79 @@ do
 done
 
 if [ "$(whoami)" = "root" ]; then
-    echo "ERROR: do not use the BSP as root. Exiting..."
-fi
-
-if [ ! -e $1/conf/local.conf.sample ]; then
-    build_dir_setup_enabled="true"
-else
-    build_dir_setup_enabled="false"
-fi
-
-if [ "$build_dir_setup_enabled" = "true" ] && [ -z "$MACHINE" ]; then
-    usage
-    echo -e "ERROR: You must set MACHINE when creating a new build directory."
-    clean_up
+    echo "ERROR: do not use yocto as root! Exiting..."
     return 1
+fi
+
+if [ ! -e "$1/conf/local.conf.sample" ]; then
+    build_dir_setup_enabled=true
+else
+    build_dir_setup_enabled=false
+fi
+
+if $build_dir_setup_enabled;then
+    if [ -z "$MACHINE" ];then
+        usage
+        echo -e "ERROR: You must set MACHINE when creating a new build directory."
+        clean_up
+        return 1
+    fi
+    if [ -z "$DISTRO" ]; then
+        usage
+        echo -e "ERROR: You must set DISTRO when creating a new build directory."
+        clean_up
+        return 1
+    fi
+
+    # Check the machine type specified
+    LIST_MACHINES=`find sources/ -path '*/conf/machine/*.conf'`
+    VALID_MACHINE=`echo "$LIST_MACHINES" | grep "/${MACHINE}.conf$" | wc -l`
+    if [ "$MACHINE" = "" ] || [ "$VALID_MACHINE" = "0" ]; then
+        echo -e "\nThe \$MACHINE you have specified ($MACHINE) is not supported by this build setup"
+        usage && clean_up
+        return 1
+    fi
+    if [ ! -e "$1/conf/local.conf.sample" ]; then
+        echo "Configuring for ${MACHINE}"
+    fi
+
+    FSL_EULA_FILE="${FSL_EULA_FILE:-$CWD/sources/meta-freescale/EULA}"
+    if [ ! -e "$FSL_EULA_FILE" ]; then
+        echo -e "ERROR: EULA not found at $FSL_EULA_FILE."
+        clean_up
+    fi
+
+    if [ -z "$DISTRO" ]; then
+        DISTRO="fsl-imx-wayland"
+    fi
+    shopt -q nullglob && nullglob=false || nullglob=true
+    $nullglob && shopt -s nullglob
+    distro_dirs="`find sources -path "*/conf/distro/${DISTRO}.conf" -printf "%h\n"`"
+    if [ -z "$distro_dirs" ];then
+        echo "Unsupported distro: '$DISTRO'" >&2
+        usage && clean_up
+        return 1
+    fi
+    bitbake_target=""
+    for d in $distro_dirs;do
+        dir="`dirname "${d}"`/../recipes-core/images"
+        [ -d "$dir" ] || continue
+        distro_images="`cd "$dir" && ls *.bb`"
+        bitbake_target="${bitbake_target} ${distro_images//.bb/ }"
+    done
+    for t in $bitbake_target;do
+        if [ "${t/-image/}" = "${DISTRO}" ];then
+            bitbake_target="$t"
+            break
+        fi
+        if [ "$DISTRO" = "karo-wayland" ];then
+            bitbake_target="karo-image-weston karo-image-mulitmedia"
+        fi
+    done
 fi
 
 if [ -z "$SDKMACHINE" ]; then
-    SDKMACHINE='i686'
-fi
-
-if [ "$build_dir_setup_enabled" = "true" ] && [ -z "$DISTRO" ]; then
-    usage
-    echo -e "ERROR: You must set DISTRO when creating a new build directory."
-    clean_up
-    return 1
-fi
-
-[ -z "$FSL_EULA_FILE" ] && FSL_EULA_FILE=$CWD/sources/meta-freescale/EULA
-if [ ! -e $FSL_EULA_FILE ]; then
-    echo -e "ERROR: EULA not found at $FSL_EULA_FILE."
-    clean_up
-    return 1
+    SDKMACHINE=`uname -m`
 fi
 
 OEROOT=$PWD/sources/poky
@@ -143,7 +189,27 @@ if [ -e $PWD/sources/oe-core ]; then
     OEROOT=$PWD/sources/oe-core
 fi
 
-. $OEROOT/oe-init-build-env $CWD/$1 > /dev/null
+# Ensure all files in sources/base are kept in sync with project root
+updated=false
+for f in "$CWD/sources/base/"*; do
+    file="$(basename $f)"
+    if [ "$file" = "conf" ] || echo "$file" | grep -q '~$'; then
+        continue
+    fi
+
+    if ! cmp -s "$file" "$f"; then
+        updated=true
+        [ -e "$file" ] && chmod u+w "$file"
+        cp "$f" "$file"
+    fi
+done
+$nullglob && shopt -u nullglob
+if $updated; then
+    echo "The project root content has been updated. Please run '$PROGNAME' again."
+    return
+fi
+
+. $OEROOT/oe-init-build-env "$CWD/$1" > /dev/null
 
 # if conf/local.conf not generated, no need to go further
 if [ ! -e conf/local.conf ]; then
@@ -155,21 +221,20 @@ fi
 export PATH="`echo $PATH | sed 's/\(:.\|:\)*:/:/g;s/^.\?://;s/:.\?$//'`"
 
 generated_config=
-if [ "$build_dir_setup_enabled" = "true" ]; then
+if $build_dir_setup_enabled; then
     mv conf/local.conf conf/local.conf.sample
 
     # Generate the local.conf based on the Yocto defaults
     TEMPLATES=$CWD/sources/base/conf 
     grep -v '^#\|^$' conf/local.conf.sample > conf/local.conf
-    cat >> conf/local.conf <<EOF
 
-DL_DIR ?= "\${BSPDIR}/downloads/"
-EOF
+    if [ "$DISTRO" = "karo-minimal" ];then
+        echo 'EXTRA_IMAGE_FEATURES += "read-only-rootfs"' >> conf/local.conf
+    fi
     # Change settings according environment
     sed -e "s,MACHINE ??=.*,MACHINE ??= '$MACHINE',g" \
         -e "s,SDKMACHINE ??=.*,SDKMACHINE ??= '$SDKMACHINE',g" \
         -e "s,DISTRO ?=.*,DISTRO ?= '$DISTRO',g" \
-        -e "s,PACKAGE_CLASSES ?=.*,PACKAGE_CLASSES ?= '$PACKAGE_CLASSES',g" \
         -i conf/local.conf
 
     cp $TEMPLATES/* conf/
@@ -185,7 +250,7 @@ EOF
 fi
 
 # Handle EULA setting
-EULA_ACCEPTED=
+EULA_ACCEPTED=1
 
 # EULA has been accepted already (ACCEPT_FSL_EULA is set in local.conf)
 if grep -q '^\s*ACCEPT_FSL_EULA\s*=\s*["'\'']..*["'\'']' conf/local.conf; then
@@ -215,7 +280,7 @@ EOF
 
     sleep 4
 
-    more -d $FSL_EULA_FILE
+    more -d "$FSL_EULA_FILE"
     echo
     REPLY=
     while [ -z "$REPLY" ]; do
@@ -238,23 +303,23 @@ fi
 
 cat <<EOF
 
-Welcome to Freescale Community BSP
+Welcome to Ka-Ro electronics TX and QS module BSP
 
 The Yocto Project has extensive documentation about OE including a
 reference manual which can be found at:
-    http://yoctoproject.org/documentation
+    https://yoctoproject.org/documentation
 
 For more information about OpenEmbedded see their website:
-    http://www.openembedded.org/
+    https://www.openembedded.org/
 
-You can now run 'bitbake <target>'
-
-Common targets are:
-    core-image-minimal
-    meta-toolchain
-    meta-toolchain-sdk
-    adt-installer
-    meta-ide-support
+For a Ka-Ro specific Yocto guide please refer to:
+    "Getting Started" > "Yocto Guide" in the respective TX module page on
+    https://www.karo-electronics.com
+${bitbake_target:+\
+You can start your build now with:\
+$(for i in ${bitbake_target:-core-image-minimal};do \
+    echo -ne "\n    bitbake $i"; \
+done )}
 
 EOF
 
