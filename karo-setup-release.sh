@@ -203,18 +203,21 @@ echo "# i.MX Yocto Project Release layers" >> "$BUILD_DIR/conf/bblayers.conf"
 add_layer meta-imx/meta-bsp
 add_layer meta-imx/meta-sdk
 add_layer meta-imx/meta-ml
+add_layer meta-nxp-demo-experience
 
 echo "" >> "$BUILD_DIR/conf/bblayers.conf"
 
 add_layer meta-browser
 add_layer meta-rust
+add_layer meta-clang
 add_layer meta-openembedded/meta-gnome
 add_layer meta-openembedded/meta-networking
 add_layer meta-openembedded/meta-filesystems
 
 add_layer meta-qt5
+add_layer meta-python2
 add_layer meta-karo-nxp
-add_layer meta-karo-distro
+add_layer meta-karo-nxp-distro
 
 case $KARO_DISTRO in
     karo-custom-*)
