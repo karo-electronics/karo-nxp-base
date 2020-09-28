@@ -250,7 +250,7 @@ if $build_dir_setup_enabled; then
 fi
 
 # Handle EULA setting
-EULA_ACCEPTED=1
+EULA_ACCEPTED=
 
 # EULA has been accepted already (ACCEPT_FSL_EULA is set in local.conf)
 if grep -q '^\s*ACCEPT_FSL_EULA\s*=\s*["'\'']..*["'\'']' conf/local.conf; then
@@ -290,6 +290,7 @@ EOF
             y|Y)
             echo "EULA has been accepted."
             echo "ACCEPT_FSL_EULA = \"1\"" >> conf/local.conf
+            EULA=1
             ;;
             n|N)
             echo "EULA has not been accepted."

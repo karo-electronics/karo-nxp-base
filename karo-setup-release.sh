@@ -28,7 +28,7 @@
 # Copyright (C) 2020 Markus Bauer <MB@KARO-electronics.de>
 #
 
-#. sources/meta-imx/tools/setup-utils.sh
+. sources/meta-imx/tools/setup-utils.sh
 
 CWD=`pwd`
 BASENAME="karo-setup-release.sh"
