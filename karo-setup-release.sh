@@ -231,6 +231,7 @@ case $KARO_DISTRO in
 	remove_layer meta-qt5
 	remove_layer meta-openembedded/meta-gnome
 	remove_layer meta-browser
+	remove_layer meta-nxp-demo-experience
 	;;
     *)
 esac
