@@ -228,7 +228,6 @@ case $KARO_DISTRO in
 	fi
 	;;
     karo-base|karo-minimal)
-	remove_layer meta-qt5
 	remove_layer meta-openembedded/meta-gnome
 	remove_layer meta-browser
 	remove_layer meta-nxp-demo-experience
