@@ -188,10 +188,6 @@ else
     cp "$BUILD_DIR/conf/local.conf.org" "$BUILD_DIR/conf/local.conf"
 fi
 
-# Share the same sstate for all builds
-echo "SSTATE_DIR ?= \"\${BSPDIR}/sstate-cache\"" >> $BUILD_DIR/conf/local.conf
-
-
 if [ ! -e "$BUILD_DIR/conf/bblayers.conf.org" ]; then
     cp "$BUILD_DIR/conf/bblayers.conf" "$BUILD_DIR/conf/bblayers.conf.org"
 else
