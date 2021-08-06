@@ -203,8 +203,6 @@ add_layer meta-nxp-demo-experience
 
 echo "" >> "$BUILD_DIR/conf/bblayers.conf"
 
-add_layer meta-browser
-add_layer meta-rust
 add_layer meta-clang
 add_layer meta-openembedded/meta-gnome
 add_layer meta-openembedded/meta-networking
