@@ -211,7 +211,7 @@ add_layer meta-openembedded/meta-filesystems
 add_layer meta-qt5
 add_layer meta-python2
 add_layer meta-karo-nxp
-add_layer meta-karo-nxp-distro
+add_layer meta-karo-distro
 
 case $KARO_DISTRO in
     karo-custom-*)
