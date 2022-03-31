@@ -205,8 +205,6 @@ echo "" >> "$BUILD_DIR/conf/bblayers.conf"
 
 add_layer meta-clang
 add_layer meta-openembedded/meta-gnome
-add_layer meta-openembedded/meta-networking
-add_layer meta-openembedded/meta-filesystems
 
 add_layer meta-qt5
 add_layer meta-python2
