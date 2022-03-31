@@ -221,7 +221,7 @@ case $KARO_DISTRO in
 	    echo "No custom layer found for distro: '$KARO_DISTRO'" >&2
 	fi
 	;;
-    karo-base|karo-minimal)
+    karo-minimal)
 	remove_layer meta-openembedded/meta-gnome
 	remove_layer meta-browser
 	remove_layer meta-nxp-demo-experience
