@@ -244,10 +244,6 @@ PACKAGECONFIG_append_pn-nativesdk-qemu = " sdl"
 CONF_VERSION = "1"
 
 #
-# disable bogus "... This may be due to host contamination" warnings
-#
-WARN_QA_remove = "host-user-contaminated"
-
 #
 # provide a default for VIRTUAL-RUNTIME_dev_manager
 #
