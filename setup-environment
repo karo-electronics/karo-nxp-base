@@ -195,8 +195,9 @@ fi
 # Ensure all files in sources/base are kept in sync with project root
 updated=false
 for f in "$CWD/sources/base/"*; do
+    [ -f "$f" ] || continue
     file="$(basename $f)"
-    if [ "$file" = "conf" ] || echo "$file" | grep -q '~$'; then
+    if echo "$file" | grep -q '~$'; then
         continue
     fi
 
