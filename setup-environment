@@ -175,10 +175,10 @@ if $build_dir_setup_enabled;then
             break
         fi
         if [ "$DISTRO" = "karo-wayland" ];then
-            bitbake_target="karo-image-weston karo-image-qt5 karo-image-ml"
+            bitbake_target="karo-image-weston karo-image-6 karo-image-ml"
         fi
         if [ "$DISTRO" = "karo-xwayland" ];then
-            bitbake_target="karo-image-weston karo-image-qt5 karo-image-ml karo-image-basler"
+            bitbake_target="karo-image-weston karo-image-qt6 karo-image-ml karo-image-basler"
         fi
     done
 fi

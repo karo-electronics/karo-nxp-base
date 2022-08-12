@@ -197,9 +197,6 @@ if [ "$KARO_DISTRO" != "karo-minimal" ];then
     add_layer meta-nxp-demo-experience
 
     add_layer meta-openembedded/meta-gnome
-
-    add_layer meta-qt5
-    add_layer meta-python2
 fi
 
 echo "" >> "$BUILD_DIR/conf/bblayers.conf"
