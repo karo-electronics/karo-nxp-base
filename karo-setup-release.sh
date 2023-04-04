@@ -149,9 +149,6 @@ esac
 
 layers=""
 
-# copy new EULA into community so setup uses latest i.MX EULA
-cp sources/meta-imx/EULA.txt sources/meta-freescale/EULA
-
 # Backup CWD value as it's going to be unset by upcoming external scripts calls
 CURRENT_CWD="$CWD"
 
@@ -193,12 +190,6 @@ add_layer meta-imx/meta-bsp
 add_layer meta-imx/meta-sdk
 add_layer meta-imx/meta-ml
 
-if [ "$KARO_DISTRO" != "karo-minimal" ];then
-    add_layer meta-nxp-demo-experience
-
-    add_layer meta-openembedded/meta-gnome
-fi
-
 echo "" >> "$BUILD_DIR/conf/bblayers.conf"
 echo "# Ka-Ro specific layers" >> "$BUILD_DIR/conf/bblayers.conf"
 add_layer meta-karo-nxp
@@ -216,14 +207,6 @@ esac
 
 echo "BSPDIR='$(cd "$BSPDIR";pwd)'"
 echo "BUILD_DIR='$(cd "$BUILD_DIR";pwd)'"
-
-# Support integrating community meta-freescale instead of meta-fsl-arm
-if [ -d ../sources/meta-freescale ]; then
-    echo meta-freescale directory found
-    # Change settings according to environment
-    sed -e "s,meta-fsl-arm\s,meta-freescale ,g" -i conf/bblayers.conf
-    sed -e "s,\$.BSPDIR./sources/meta-fsl-arm-extra\s,,g" -i conf/bblayers.conf
-fi
 
 cd "$BUILD_DIR"
 clean_up
