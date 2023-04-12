@@ -267,3 +267,8 @@ VIRTUAL-RUNTIME_dev_manager ??= "udev"
 ROOT_HOME = "/root"
 
 SANITY_TESTED_DISTROS:append = " devuan-4"
+
+# don't use a bogus build timestamp
+unset SOURCE_DATE_EPOCH
+REPRODUCIBLE_TIMESTAMP_ROOTFS = ""
+KERNEL_DEBUG_TIMESTAMPS = "1"
