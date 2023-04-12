@@ -40,7 +40,7 @@ exit_message () {
 }
 
 usage() {
-    echo "Usage: source $BASENAME [-b <build-dir>] [-h]"
+    echo "Usage: MACHINE=<machine> [DISTRO=<distro>] [KARO_BASEBOARD=<baseboard>] source $BASENAME [-b <build-dir>] [-h]"
 
     echo "Optional parameters:
 * [-b <build-dir>]: Build directory, where <build-dir> is a sensible name of a
@@ -148,7 +148,7 @@ cp sources/meta-imx/EULA.txt sources/meta-freescale/EULA
 CURRENT_CWD="$CWD"
 
 # Set up the basic yocto environment
-DISTRO=${KARO_DISTRO:-DISTRO} MACHINE=$MACHINE . ./$PROGNAME $BUILD_DIR
+DISTRO=${KARO_DISTRO:-DISTRO} MACHINE=$MACHINE KARO_BASEBOARD=${KARO_BASEBOARD} . ./$PROGNAME $BUILD_DIR
 
 # Set CWD to a value again as it's being unset by the external scripts calls
 [ -z "$CWD" ] && CWD="$CURRENT_CWD"
