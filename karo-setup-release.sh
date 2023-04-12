@@ -50,19 +50,12 @@ usage() {
 "
 }
 
-test_builddir () {
-    if [ ! -e $BUILD_DIR/conf/local.conf ]; then
-	echo -e "\n ERROR - No build directory is set yet. Run the 'setup-environment' script before running this script to create $BUILD_DIR\n"
-	return 1
-    fi
-}
-
 clean_up() {
     unset CWD BUILD_DIR KARO_DISTRO
     unset fsl_setup_help fsl_setup_error fsl_setup_flag
     unset usage clean_up
     unset ARM_DIR META_FSL_BSP_RELEASE
-    exit_message clean_up
+    exit_message
 }
 
 layer_exists() {
@@ -137,7 +130,6 @@ case $MACHINE in
 		;;
 	    *)
 		echo -e "\n ERROR - $DISTRO not supported on $MACHINE\n"
-#		echo -e "\n ERROR - Only Wayland distros are supported for i.MX8 or i.MX8M\n"
 		return 1
 		;;
 	esac
@@ -148,6 +140,9 @@ case $MACHINE in
 esac
 
 layers=""
+
+# copy new EULA into community so setup uses latest i.MX EULA
+cp sources/meta-imx/EULA.txt sources/meta-freescale/EULA
 
 # Backup CWD value as it's going to be unset by upcoming external scripts calls
 CURRENT_CWD="$CWD"
@@ -183,31 +178,30 @@ fi
 
 echo "" >> "$BUILD_DIR/conf/bblayers.conf"
 echo "# i.MX Yocto Project Release layers" >> "$BUILD_DIR/conf/bblayers.conf"
-#echo 'BBLAYERS += "${BSPDIR}/sources/meta-imx/meta-bsp"' >> "$BUILD_DIR/conf/bblayers.conf"
-#echo 'BBLAYERS += "${BSPDIR}/sources/meta-imx/meta-sdk"' >> "$BUILD_DIR/conf/bblayers.conf"
 
 add_layer meta-imx/meta-bsp
 add_layer meta-imx/meta-sdk
 add_layer meta-imx/meta-ml
 
-echo "" >> "$BUILD_DIR/conf/bblayers.conf"
-echo "# Ka-Ro specific layers" >> "$BUILD_DIR/conf/bblayers.conf"
-add_layer meta-karo-nxp
-add_layer meta-karo-distro
+if [ -z "${KARO_DISTRO%karo-*}" ];then
+    echo "" >> "$BUILD_DIR/conf/bblayers.conf"
+    echo "# Ka-Ro specific layers" >> "$BUILD_DIR/conf/bblayers.conf"
+    add_layer meta-karo-nxp
+    add_layer meta-karo-distro
 
-case $KARO_DISTRO in
-    karo-custom-*)
-	if [ -d "${BSPDIR}/sources/meta${KARO_DISTRO#karo-custom}" ];then
-	    add_layer "meta${KARO_DISTRO#karo-custom}"
-	else
-	    echo "No custom layer found for distro: '$KARO_DISTRO'" >&2
-	fi
-	;;
-esac
+    case $KARO_DISTRO in
+	karo-custom-*)
+	    if [ -d "${BSPDIR}/sources/meta${KARO_DISTRO#karo-custom}" ];then
+		add_layer "meta${KARO_DISTRO#karo-custom}"
+	    else
+		echo "No custom layer found for distro: '$KARO_DISTRO'" >&2
+	    fi
+	    ;;
+    esac
+fi
 
 echo "BSPDIR='$(cd "$BSPDIR";pwd)'"
 echo "BUILD_DIR='$(cd "$BUILD_DIR";pwd)'"
 
 cd "$BUILD_DIR"
 clean_up
-unset KARO_DISTRO
