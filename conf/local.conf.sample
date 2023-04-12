@@ -256,6 +256,8 @@ CONF_VERSION = "2"
 #
 #BB_HASHSERVE = "auto"
 #BB_SIGNATURE_HANDLER = "OEEquivHash"
+BB_HASHSERVE = ""
+BB_SIGNATURE_HANDLER = "OEBasicHash"
 
 VIRTUAL-RUNTIME_dev_manager ??= "udev"
 
