@@ -17,4 +17,7 @@ BBLAYERS = " \
   \
   ${BSPDIR}/sources/meta-freescale \
   ${BSPDIR}/sources/meta-freescale-distro \
+  \
+  ${BSPDIR}/sources/meta-arm/meta-arm \
+  ${BSPDIR}/sources/meta-arm/meta-arm-toolchain \
 "

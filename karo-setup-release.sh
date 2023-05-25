@@ -141,9 +141,6 @@ esac
 
 layers=""
 
-# copy new EULA into community so setup uses latest i.MX EULA
-cp sources/meta-imx/EULA.txt sources/meta-freescale/EULA
-
 # Backup CWD value as it's going to be unset by upcoming external scripts calls
 CURRENT_CWD="$CWD"
 
@@ -182,6 +179,7 @@ echo "# i.MX Yocto Project Release layers" >> "$BUILD_DIR/conf/bblayers.conf"
 add_layer meta-imx/meta-bsp
 add_layer meta-imx/meta-sdk
 add_layer meta-imx/meta-ml
+add_layer meta-imx/meta-v2x
 
 if [ -z "${KARO_DISTRO%karo-*}" ];then
     echo "" >> "$BUILD_DIR/conf/bblayers.conf"

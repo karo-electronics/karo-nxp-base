@@ -23,7 +23,7 @@
 CWD="`cd .;pwd`"
 PROGNAME=setup-environment
 export BSPDIR="$CWD"
-TEMPLATECONF=${PWD}/sources/base/conf
+TEMPLATECONF="${BSPDIR}/sources/base/conf/templates/default"
 
 if [ -z "$BASH_VERSION" ];then
     echo "This script must to be run from bash" >&2
@@ -124,7 +124,7 @@ if [ "$(whoami)" = "root" ]; then
     return 1
 fi
 
-if [ ! -e "$1/conf/local.conf.sample" ]; then
+if [ ! -e "${1}/conf/local.conf" ]; then
     build_dir_setup_enabled=true
 else
     build_dir_setup_enabled=false
@@ -152,7 +152,7 @@ if $build_dir_setup_enabled;then
         usage && clean_up
         return 1
     fi
-    if [ ! -e "$1/conf/local.conf.sample" ]; then
+    if [ ! -e "${1}/conf/local.conf" ]; then
         echo "Configuring for ${MACHINE}"
     fi
 
@@ -238,7 +238,6 @@ export PATH="`echo $PATH | sed 's/\(:.\|:\)*:/:/g;s/^.\?://;s/:.\?$//'`"
 generated_config=
 if $build_dir_setup_enabled; then
     mv conf/local.conf conf/local.conf.sample
-
     # Generate the local.conf based on the Yocto defaults
     TEMPLATES=$CWD/sources/base/conf 
     grep -v '^#\|^$' conf/local.conf.sample > conf/local.conf
