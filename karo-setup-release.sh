@@ -183,6 +183,10 @@ add_layer meta-imx/meta-bsp
 add_layer meta-imx/meta-sdk
 add_layer meta-imx/meta-ml
 
+if [ "$KARO_DISTRO" != "karo-minimal" ];then
+    add_layer meta-nxp-demo-experience
+fi
+
 if [ -z "${KARO_DISTRO%karo-*}" ];then
     echo "" >> "$BUILD_DIR/conf/bblayers.conf"
     echo "# Ka-Ro specific layers" >> "$BUILD_DIR/conf/bblayers.conf"
