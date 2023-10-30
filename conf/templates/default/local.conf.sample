@@ -270,5 +270,6 @@ SANITY_TESTED_DISTROS:append = " devuan-4"
 
 # don't use a bogus build timestamp
 unset SOURCE_DATE_EPOCH
-REPRODUCIBLE_TIMESTAMP_ROOTFS = ""
-KERNEL_DEBUG_TIMESTAMPS = "1"
+IMAGE_PREPROCESS_COMMAND:remove = "${@ bb.utils.contains('DISTRO_FEATURES', 'reproducible-timestamps', "", "reproducible_final_image_task;", d)}"
+ROOTFS_POST_PROCESS_COMMAND:remove = "${@ bb.utils.contains('DISTRO_FEATURES', 'reproducible-timestamps', "", "rootfs_reproducible;", d)}"
+KERNEL_DEBUG_TIMESTAMPS = "${@ bb.utils.contains('DISTRO_FEATURES', 'reproducible-timestamps', "0", "1", d)}"
