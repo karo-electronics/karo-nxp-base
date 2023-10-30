@@ -76,7 +76,7 @@ EOF
 clean_up()
 {
    unset EULA LIST_MACHINES VALID_MACHINE
-   unset CWD TEMPLATES SHORTOPTS LONGOPTS ARGS PROGNAME
+   unset CWD TEMPLATECONF SHORTOPTS LONGOPTS ARGS PROGNAME
    unset generated_config updated
    unset MACHINE SDKMACHINE DISTRO OEROOT
 }
@@ -239,7 +239,6 @@ generated_config=
 if $build_dir_setup_enabled; then
     mv conf/local.conf conf/local.conf.sample
     # Generate the local.conf based on the Yocto defaults
-    TEMPLATES=$CWD/sources/base/conf 
     grep -v '^#\|^$' conf/local.conf.sample > conf/local.conf
 
     if [ "$DISTRO" = "karo-minimal" ];then
@@ -264,7 +263,7 @@ EOF
 KARO_BASEBOARD = "${KARO_BASEBOARD}"
 EOF
     fi
-    cp $TEMPLATES/* conf/
+    cp $TEMPLATECONF/* conf/
 
     for s in $HOME/.oe $HOME/.yocto; do
         if [ -e $s/site.conf ]; then
