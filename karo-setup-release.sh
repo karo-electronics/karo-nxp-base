@@ -176,10 +176,10 @@ fi
 echo "" >> "$BUILD_DIR/conf/bblayers.conf"
 echo "# i.MX Yocto Project Release layers" >> "$BUILD_DIR/conf/bblayers.conf"
 
-add_layer meta-imx/meta-bsp
-add_layer meta-imx/meta-sdk
-add_layer meta-imx/meta-ml
-add_layer meta-imx/meta-v2x
+add_layer meta-imx/meta-imx-bsp
+add_layer meta-imx/meta-imx-sdk
+add_layer meta-imx/meta-imx-ml
+add_layer meta-imx/meta-imx-v2x
 
 if [ -z "${KARO_DISTRO%karo-*}" ];then
     echo "" >> "$BUILD_DIR/conf/bblayers.conf"
