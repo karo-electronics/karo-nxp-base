@@ -23,7 +23,8 @@
 CWD="`cd .;pwd`"
 PROGNAME=setup-environment
 export BSPDIR="$CWD"
-TEMPLATECONF="${BSPDIR}/sources/base/conf/templates/default"
+export LAYERDIR="${BSPDIR}/sources"
+TEMPLATECONF="${LAYERDIR}/base/conf/templates/default"
 
 if [ -z "$BASH_VERSION" ];then
     echo "This script must to be run from bash" >&2
@@ -52,10 +53,10 @@ directory <build-dir>. The build directory configuration is unchanged.
     shopt -q nullglob && nullglob=false || nullglob=true
     $nullglob && shopt -s nullglob
     echo -e "
-Supported machines: `echo; find sources/ -path '*/conf/machine/*.conf' | \
+Supported machines: `echo; find ${LAYERDIR} -path '*/conf/machine/*.conf' | \
 sed 's:^.*/:\t:;s/\.conf//' | sort`
 
-Supported distros: `echo; find sources/ -path '*/conf/distro/*.conf' | \
+Supported distros: `echo; find ${LAYERDIR} -path '*/conf/distro/*.conf' | \
 sed 's:^.*/:\t:;s/\.conf//' | sort`
 
 To build for a machine listed above, run this script as:
@@ -145,7 +146,7 @@ if $build_dir_setup_enabled;then
     fi
 
     # Check the machine type specified
-    LIST_MACHINES=`find sources/ -path '*/conf/machine/*.conf'`
+    LIST_MACHINES=`find ${LAYERDIR} -path '*/conf/machine/*.conf'`
     VALID_MACHINE=`echo "$LIST_MACHINES" | grep "/${MACHINE}.conf$" | wc -l`
     if [ "$MACHINE" = "" ] || [ "$VALID_MACHINE" = "0" ]; then
         echo -e "\nThe \$MACHINE you have specified ($MACHINE) is not supported by this build setup"
@@ -156,7 +157,7 @@ if $build_dir_setup_enabled;then
         echo "Configuring for ${MACHINE}"
     fi
 
-    FSL_EULA_FILE="${FSL_EULA_FILE:-$CWD/sources/meta-freescale/EULA}"
+    FSL_EULA_FILE="${FSL_EULA_FILE:-${LAYERDIR}/meta-freescale/EULA}"
     if [ ! -e "$FSL_EULA_FILE" ]; then
         echo -e "ERROR: EULA not found at $FSL_EULA_FILE."
         clean_up
@@ -198,14 +199,14 @@ if [ -z "$SDKMACHINE" ]; then
     SDKMACHINE=`uname -m`
 fi
 
-OEROOT=$PWD/sources/poky
-if [ -e $PWD/sources/oe-core ]; then
-    OEROOT=$PWD/sources/oe-core
+OEROOT=${LAYERDIR}/poky
+if [ -e ${LAYERDIR}/oe-core ]; then
+    OEROOT=${LAYERDIR}/oe-core
 fi
 
-# Ensure all files in sources/base are kept in sync with project root
+# Ensure all files in ${LAYERDIR}/base are kept in sync with project root
 updated=false
-for f in "$CWD/sources/base/"*; do
+for f in "${LAYERDIR}/base/"*; do
     [ -f "$f" ] || continue
     file="$(basename $f)"
     if echo "$file" | grep -q '~$'; then
