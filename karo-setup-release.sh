@@ -186,6 +186,9 @@ if [ -z "${KARO_DISTRO%karo-*}" ];then
     echo "# Ka-Ro specific layers" >> "$BUILD_DIR/conf/bblayers.conf"
     add_layer meta-karo-nxp
     add_layer meta-karo-distro
+    echo "" >> "$BUILD_DIR/conf/bblayers.conf"
+    echo "# layer for RAUC support (https://rauc.io)" >> "$BUILD_DIR/conf/bblayers.conf"
+    add_layer meta-rauc
 
     case $KARO_DISTRO in
 	karo-custom-*)
