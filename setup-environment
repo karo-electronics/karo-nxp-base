@@ -86,7 +86,7 @@ get_timezone() {
     if [ -s /etc/timezone ];then
         tz="`cat /etc/timezone`"
     elif [ -s /etc/localtime ];then
-        tz="`readlink /etc/localtime`"
+        tz="`readlink -f /etc/localtime`"
         tz="${tz#*zoneinfo/}"
     fi
     echo "$tz"
