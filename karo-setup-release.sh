@@ -68,7 +68,7 @@ layer_exists() {
 add_layer() {
     layer_exists && return
     layers="$layers $1 "
-    echo "BBLAYERS += \"\${BSPDIR}/sources/$1\"" >> "$BUILD_DIR/conf/bblayers.conf"
+    echo "BBLAYERS += \"\${BSPDIR}/sources/$1\"" >> "conf/bblayers.conf"
 }
 
 # get command line options
@@ -112,7 +112,7 @@ else
 fi
 
 if [ -z "$BUILD_DIR" ]; then
-    BUILD_DIR='build-karo-nxp'
+    BUILD_DIR='build-karo'
 fi
 
 if [ -z "$MACHINE" ]; then
@@ -150,31 +150,26 @@ DISTRO=${KARO_DISTRO:-DISTRO} MACHINE=$MACHINE KARO_BASEBOARD=${KARO_BASEBOARD} 
 # Set CWD to a value again as it's being unset by the external scripts calls
 [ -z "$CWD" ] && CWD="$CURRENT_CWD"
 
-# Point to the current directory since the last command changed the directory to $BUILD_DIR
-BUILD_DIR=.
-
-if [ ! -e "$BUILD_DIR/conf/local.conf" ]; then
-    echo -e "\n ERROR - No build directory is set yet. Run the 'setup-environment' script before running this script to create $BUILD_DIR\n"
-    echo -e "\n"
+if [ ! -e "conf/local.conf" ]; then
     return 1
 fi
 
 # On the first script run, backup the local.conf file
 # Consecutive runs, it restores the backup and changes are appended on this one.
-if [ ! -e "$BUILD_DIR/conf/local.conf.org" ]; then
-    cp "$BUILD_DIR/conf/local.conf" "$BUILD_DIR/conf/local.conf.org"
+if [ ! -e "conf/local.conf.org" ]; then
+    cp "conf/local.conf" "conf/local.conf.org"
 else
-    cp "$BUILD_DIR/conf/local.conf.org" "$BUILD_DIR/conf/local.conf"
+    cp "conf/local.conf.org" "conf/local.conf"
 fi
 
-if [ ! -e "$BUILD_DIR/conf/bblayers.conf.org" ]; then
-    cp "$BUILD_DIR/conf/bblayers.conf" "$BUILD_DIR/conf/bblayers.conf.org"
+if [ ! -e "conf/bblayers.conf.org" ]; then
+    cp "conf/bblayers.conf" "conf/bblayers.conf.org"
 else
-    cp "$BUILD_DIR/conf/bblayers.conf.org" "$BUILD_DIR/conf/bblayers.conf"
+    cp "conf/bblayers.conf.org" "conf/bblayers.conf"
 fi
 
-echo "" >> "$BUILD_DIR/conf/bblayers.conf"
-echo "# i.MX Yocto Project Release layers" >> "$BUILD_DIR/conf/bblayers.conf"
+echo "" >> "conf/bblayers.conf"
+echo "# i.MX Yocto Project Release layers" >> "conf/bblayers.conf"
 
 add_layer meta-imx/meta-imx-bsp
 add_layer meta-imx/meta-imx-sdk
@@ -182,12 +177,12 @@ add_layer meta-imx/meta-imx-ml
 add_layer meta-imx/meta-imx-v2x
 
 if [ -z "${KARO_DISTRO%karo-*}" ];then
-    echo "" >> "$BUILD_DIR/conf/bblayers.conf"
-    echo "# Ka-Ro specific layers" >> "$BUILD_DIR/conf/bblayers.conf"
+    echo "" >> "conf/bblayers.conf"
+    echo "# Ka-Ro specific layers" >> "conf/bblayers.conf"
     add_layer meta-karo-nxp
     add_layer meta-karo-distro
-    echo "" >> "$BUILD_DIR/conf/bblayers.conf"
-    echo "# layer for RAUC support (https://rauc.io)" >> "$BUILD_DIR/conf/bblayers.conf"
+    echo "" >> "conf/bblayers.conf"
+    echo "# layer for RAUC support (https://rauc.io)" >> "conf/bblayers.conf"
     add_layer meta-rauc
 
     case $KARO_DISTRO in
