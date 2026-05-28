@@ -11,7 +11,7 @@
   "workspaceFolder": "/workspaces/${localWorkspaceFolderBasename}",
 
   "mounts": [
-    "source=${localEnv:HOME}/yocto-shared/scarthgap,target=/yocto-shared,type=bind,consistency=delegated"
+    "source=yocto-shared-scarthgap,target=/yocto-shared,type=volume"
   ],
 
   "containerEnv": {

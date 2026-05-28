@@ -11,4 +11,7 @@ RUN pip3 install --break-system-packages oelint-adv
 
 RUN chsh -s /bin/bash yoctouser
 
+RUN mkdir /yocto-shared
+RUN chown -R 1000:1000 /yocto-shared
+
 USER yoctouser
