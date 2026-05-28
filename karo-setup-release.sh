@@ -55,7 +55,6 @@ clean_up() {
     unset fsl_setup_help fsl_setup_error fsl_setup_flag
     unset usage clean_up
     unset ARM_DIR META_FSL_BSP_RELEASE
-    exit_message
 }
 
 layer_exists() {
@@ -197,7 +196,7 @@ if [ -z "${KARO_DISTRO%karo-*}" ];then
 fi
 
 echo "BSPDIR='$(cd "$BSPDIR";pwd)'"
-echo "BUILD_DIR='$(cd "$BUILD_DIR";pwd)'"
+echo "BUILD_DIR='$(pwd -P)'"
 
-cd "$BUILD_DIR"
+exit_message
 clean_up
