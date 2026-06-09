@@ -51,7 +51,7 @@
           "**/build*/tmp"
         ],
   	    "git.repositoryScanMaxDepth": 3,
-        "bitbake.pathToBitbakeFolder": "${workspaceFolder}/layers/poky/bitbake",
+        "bitbake.pathToBitbakeFolder": "${workspaceFolder}/sources/poky/bitbake",
         "bitbake.pathToEnvScript": "${workspaceFolder}/setup-environment",
         "bitbake.pathToBuildFolder": "${workspaceFolder}/build-karo"
       }
