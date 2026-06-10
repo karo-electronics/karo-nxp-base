@@ -36,7 +36,7 @@ PROGNAME="setup-environment"
 
 exit_message () {
     echo "To return to this build environment later please run:"
-    echo -e "\tsource setup-environment <build_dir>"
+    echo -e "\tsource setup-environment ${BUILD_DIR}"
 }
 
 usage() {
