@@ -28,8 +28,6 @@
 # Copyright (C) 2020 Markus Bauer <MB@KARO-electronics.de>
 #
 
-. sources/meta-imx/tools/setup-utils.sh
-
 CWD=`pwd`
 BASENAME="karo-setup-release.sh"
 PROGNAME="setup-environment"
@@ -98,7 +96,8 @@ OPTIND=$OLD_OPTIND
 if test $fsl_setup_help; then
     usage && clean_up && return 1
 elif test $fsl_setup_error; then
-    clean_up && return 1
+    clean_up
+    return 1
 fi
 
 if [ -z "$DISTRO" ]; then
@@ -115,28 +114,11 @@ if [ -z "$BUILD_DIR" ]; then
 fi
 
 if [ -z "$MACHINE" ]; then
-    echo "Setting to default machine to 'tx8m-1610'"
-    MACHINE='tx8m-1610'
+    echo "No MACHINE defined" >&2
+    usage
+    clean_up
+    return 1
 fi
-
-case $MACHINE in
-    tx8m*)
-	case $DISTRO in
-	    karo*|*wayland)
-		: ok
-		;;
-	    fsl-*)
-		;;
-	    *)
-		echo -e "\n ERROR - $DISTRO not supported on $MACHINE\n"
-		return 1
-		;;
-	esac
-	;;
-    *)
-	: ok
-	;;
-esac
 
 layers=""
 
