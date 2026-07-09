@@ -2,8 +2,15 @@
   "name": "Yocto Dev Container",
 
   "build": {
-    "dockerfile": "Dockerfile"
+    "dockerfile": "Dockerfile",
+    "args": {
+			"BASE_DISTRO": "ubuntu-24.04"
+		}
   },
+
+  "runArgs": [
+    "--privileged"
+  ],
 
   "remoteUser": "yoctouser",
 
@@ -11,7 +18,8 @@
   "workspaceFolder": "/workspaces/${localWorkspaceFolderBasename}",
 
   "mounts": [
-    "source=yocto-shared-scarthgap,target=/yocto-shared,type=volume"
+    "source=yocto-shared-scarthgap,target=/yocto-shared,type=volume",
+    "source=/dev/,target=/dev/,type=bind,consistency=consistent"
   ],
 
   "containerEnv": {

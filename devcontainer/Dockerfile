@@ -5,10 +5,18 @@ FROM crops/yocto:${BASE_DISTRO}-base
 
 USER root
 
-RUN userdel -r ubuntu; usermod -u 1000 yoctouser; groupmod -g 1000 yoctouser
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    parted \
+    mtools \
+    repo \
+    minicom \
+    dfu-util \
+    uuu \
+    && rm -rf /var/lib/apt/lists/*
 
 RUN pip3 install --break-system-packages oelint-adv
 
+RUN userdel -r ubuntu; usermod -u 1000 yoctouser; groupmod -g 1000 yoctouser
 RUN chsh -s /bin/bash yoctouser
 
 RUN mkdir /yocto-shared
