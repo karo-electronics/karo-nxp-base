@@ -6,13 +6,17 @@ FROM crops/yocto:${BASE_DISTRO}-base
 USER root
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
+    wget \
     parted \
     mtools \
     repo \
     minicom \
     dfu-util \
-    uuu \
     && rm -rf /var/lib/apt/lists/*
+
+RUN wget -O /usr/local/bin/uuu \
+    https://github.com/nxp-imx/mfgtools/releases/download/uuu_1.5.243/uuu \
+ && chmod +x /usr/local/bin/uuu
 
 RUN pip3 install --break-system-packages oelint-adv
 
