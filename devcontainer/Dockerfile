@@ -1,5 +1,5 @@
 # Choose the base distro based on the supported ones for the used yocto version. E.g. ubuntu-24.04 for scarthgap.
-ARG BASE_DISTRO=ubuntu-24.04
+ARG BASE_DISTRO
 
 FROM crops/yocto:${BASE_DISTRO}-base
 
