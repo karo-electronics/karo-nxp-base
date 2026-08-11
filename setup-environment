@@ -163,36 +163,22 @@ if $build_dir_setup_enabled;then
         clean_up
     fi
 
-    if [ -z "$DISTRO" ]; then
-        DISTRO="fsl-imx-wayland"
-    fi
     shopt -q nullglob && nullglob=false || nullglob=true
     $nullglob && shopt -s nullglob
-    distro_dirs="`find sources -path "*/conf/distro/${DISTRO}.conf" -printf "%h\n"`"
-    if [ -z "$distro_dirs" ];then
+    if [ -z "$(find "${LAYERDIR}" -path "*/conf/distro/${DISTRO}.conf")" ]; then
         echo "Unsupported distro: '$DISTRO'" >&2
         usage && clean_up
         return 1
     fi
+
     bitbake_target=""
-    for d in $distro_dirs;do
-        dir="`dirname "${d}"`/../recipes-core/images"
-        [ -d "$dir" ] || continue
-        distro_images="`cd "$dir" && ls *.bb`"
-        bitbake_target="${bitbake_target} ${distro_images//.bb/ }"
-    done
-    for t in $bitbake_target;do
-        if [ "${t/-image/}" = "${DISTRO}" ];then
-            bitbake_target="$t"
-            break
-        fi
-        if [ "$DISTRO" = "karo-wayland" ];then
-            bitbake_target="karo-image-weston karo-image-qt6 karo-image-ml"
-        fi
-        if [ "$DISTRO" = "karo-xwayland" ];then
-            bitbake_target="karo-image-weston karo-image-qt6 karo-image-ml karo-image-basler"
-        fi
-    done
+    if [ "$DISTRO" = "karo-minimal" ];then
+        bitbake_target="karo-image-minimal"
+    elif [ "$DISTRO" = "karo-wayland" ];then
+        bitbake_target="karo-image-weston karo-image-qt6 karo-image-ml"
+    elif [ "$DISTRO" = "karo-xwayland" ];then
+        bitbake_target="karo-image-weston karo-image-qt6 karo-image-ml karo-image-basler"
+    fi
 fi
 
 if [ -z "$SDKMACHINE" ]; then
