@@ -12,6 +12,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     repo \
     minicom \
     dfu-util \
+    usbutils \
     && rm -rf /var/lib/apt/lists/*
 
 RUN wget -O /usr/local/bin/uuu \
